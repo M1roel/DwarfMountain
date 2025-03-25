@@ -2,7 +2,7 @@ export class Dwarf {
     constructor(x, y) {
         this.x = x;  // Startposition X
         this.y = y;  // Startposition Y
-        this.sprite = 'assets/dwarf.png'; // Dein Zwerg-Sprite
+        this.sprite = 'public/img/dwarf.jpg'; // Dein Zwerg-Sprite
         this.speed = 1;  // Geschwindigkeit des Zwerge
         this.targetX = Math.floor(Math.random() * 50);  // Zufälliges Ziel in X-Richtung
         this.targetY = Math.floor(Math.random() * 50);  // Zufälliges Ziel in Y-Richtung
