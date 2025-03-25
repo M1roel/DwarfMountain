@@ -14,7 +14,8 @@ export class Level {
             for (let x = 0; x < this.width; x++) {
                 let value = simplex.noise2D(x / 10, y / 10); // Skalierung anpassen
                 if (value < -0.7) row.push('water');
-                else if (value < 0.2) row.push('grass');
+                else if (value < 0.1) row.push('grass');
+                else if (value < 0.3) row.push('wood');
                 else row.push('mountain');
             }
             map.push(row);
