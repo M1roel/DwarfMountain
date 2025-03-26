@@ -12,7 +12,7 @@ export class Level {
         for (let y = 0; y < this.height; y++) {
             let row = [];
             for (let x = 0; x < this.width; x++) {
-                let value = simplex.noise2D(x / 10, y / 10); // Skalierung anpassen
+                let value = simplex.noise2D(x / 20, y / 20); // Skalierung anpassen
                 if (value < -0.7) row.push('water');
                 else if (value < 0.1) row.push('grass');
                 else if (value < 0.3) row.push('wood');
