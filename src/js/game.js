@@ -1,99 +1,57 @@
+import { Application, Assets, Sprite } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.0.0/dist/browser/pixi.min.js';
 import { Dwarf } from '../models/dwarf.class.js';
 import { Level } from '../levels/level.js';
 
-let lastMoveTime = 0; // Zeitstempel der letzten Bewegung
-const TILE_SIZE = 12;
-const MOVE_INTERVAL = 100; // Intervall in Millisekunden (0,5 Sekunden)
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const level = new Level(100, 100);
-canvas.width = level.width * TILE_SIZE;
-canvas.height = level.height * TILE_SIZE;
-const dwarves = [
-    generateDwarfOnGrass(level.tilemap),
-    generateDwarfOnGrass(level.tilemap)
-];
-
-// Größe der Tiles auf der Map
-
-
-// Bild-Cache
-const imageCache = {};
-
-// Funktion zum Vorladen der Bilder
-function preloadImages(imagePaths, callback) {
-    let loadedImages = 0;
-    const totalImages = imagePaths.length;
-
-    imagePaths.forEach((path) => {
-        const img = new Image();
-        img.src = path;
-        img.onload = () => {
-            loadedImages++;
-            if (loadedImages === totalImages) {
-                callback(); // Starte das Spiel, wenn alle Bilder geladen sind
-            }
-        };
-        imageCache[path] = img;
+// PixiJS-Anwendung erstellen
+(async () => {
+    const app = new Application({ 
+        backgroundColor: 0x87CEEB, 
+        resizeTo: window 
     });
-}
 
-// Funktion zum Zeichnen der Map
-function drawMap(level) {
-    for (let y = 0; y < level.height; y++) {
-        for (let x = 0; x < level.width; x++) {
-            let tile = level.tilemap[y][x];
-            const img = imageCache[`public/img/${tile}.jpg`];
-            if (img) {
-                ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
-        }
-    }
-}
+    document.body.appendChild(app.canvas);
 
-// Funktion, um einen Zwerg auf einem "grass"-Tile zu generieren
-function generateDwarfOnGrass(tilemap) {
-    let x, y;
-    do {
-        x = Math.floor(Math.random() * tilemap[0].length); // Zufällige X-Koordinate
-        y = Math.floor(Math.random() * tilemap.length);    // Zufällige Y-Koordinate
-    } while (tilemap[y][x] !== 'grass'); // Wiederhole, bis ein "grass"-Tile gefunden wird
+    const TILE_SIZE = 12;
+    const level = new Level(100, 100);
 
-    return new Dwarf(x, y); // Erstelle einen Zwerg auf der gefundenen Position
-}
+    const textures = {};
+    const imagePaths = {
+        'water': 'public/img/water.jpg',
+        'grass': 'public/img/grass.jpg',
+        'mountain': 'public/img/mountain.jpg',
+        'wood': 'public/img/wood.jpg',
+        'dwarf': 'public/img/dwarf.jpg'
+    };
 
-// Funktion zum Zeichnen der Zwerge
-function drawDwarves(dwarves) {
-    dwarves.forEach((dwarf) => {
-        const img = imageCache[dwarf.sprite];
-        if (img) {
-            ctx.drawImage(img, dwarf.x * TILE_SIZE, dwarf.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        }
+    // Lade die Texturen asynchron
+    await Promise.all(Object.values(imagePaths).map(path => Assets.load(path)));
+    
+    // Speicher die Texturen
+    Object.keys(imagePaths).forEach(key => {
+        textures[key] = Assets.get(imagePaths[key]);
     });
-}
 
-// Spiel-Loop (Rendern)
-function gameLoop(timestamp) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Initialisiere das Spiel
     drawMap(level);
+    app.ticker.add(gameLoop);
 
-    if (timestamp - lastMoveTime > MOVE_INTERVAL) {
-        dwarves.forEach((dwarf) => dwarf.move(level.tilemap)); // Bewegung ausführen
-        lastMoveTime = timestamp;
+    function drawMap(level) {
+        for (let y = 0; y < level.height; y++) {
+            for (let x = 0; x < level.width; x++) {
+                let tileType = level.tilemap[y][x];
+                if (textures[tileType]) {
+                    let sprite = new Sprite(textures[tileType]);
+                    sprite.x = x * TILE_SIZE;
+                    sprite.y = y * TILE_SIZE;
+                    sprite.width = TILE_SIZE;
+                    sprite.height = TILE_SIZE;
+                    app.stage.addChild(sprite);
+                }
+            }
+        }
     }
 
-    drawDwarves(dwarves);
-    requestAnimationFrame(gameLoop);
-}
-
-// Liste der Bilder, die vorgeladen werden müssen
-const imagePaths = [
-    'public/img/water.jpg',
-    'public/img/grass.jpg',
-    'public/img/mountain.jpg',
-    'public/img/wood.jpg',
-    'public/img/dwarf.jpg'
-];
-
-// Bilder vorladen und Spiel starten
-preloadImages(imagePaths, () => requestAnimationFrame(gameLoop));
+    function gameLoop(delta) {
+        // Hier kannst du Zwerge und andere Spielfunktionen animieren
+    }
+})();
