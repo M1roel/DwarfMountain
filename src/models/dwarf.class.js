@@ -126,7 +126,7 @@ export class Dwarf {
       ) {
         this.inventory.push("wood");
         console.log("Holz gesammelt!");
-        tilemap[newX][newY] = "grass";
+        tilemap[newY][newX] = "grass";
         return;
       }
     }
