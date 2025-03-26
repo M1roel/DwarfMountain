@@ -10,41 +10,40 @@ export class Dwarf {
 
     // Funktion, die die Bewegung zur Zielposition berechnet
     move(tilemap) {
-        // Berechne die Richtung zum Ziel
-        const dx = this.targetX - this.x;
-        const dy = this.targetY - this.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        // Falls der Zwerg noch nicht beim Ziel ist, bewege ihn
-        if (distance > this.speed) {
-            const nextX = this.x + this.speed * (dx / distance); // Nächste X-Position
-            const nextY = this.y + this.speed * (dy / distance); // Nächste Y-Position
-
-            // Berechne die Tile-Koordinaten
-            const tileX = Math.floor(nextX);
-            const tileY = Math.floor(nextY);
-
-            // Überprüfe, ob das nächste Tile "grass" ist
-            if (tilemap[tileY] && tilemap[tileY][tileX] === 'grass') {
-                this.x = nextX; // Bewege den Zwerg in X-Richtung
-                this.y = nextY; // Bewege den Zwerg in Y-Richtung
-            } else {
-                // Wenn das Ziel kein "grass"-Tile ist, wähle ein neues Ziel
-                this.setRandomTarget(tilemap);
-            }
+        if (this.targetX !== undefined && this.targetY !== undefined) {
+            this.x = this.targetX;
+            this.y = this.targetY;
+            this.targetX = undefined;
+            this.targetY = undefined;
         } else {
-            // Erreicht das Ziel, setze ein neues zufälliges Ziel
-            this.setRandomTarget(tilemap);
+            this.setRandomTarget(tilemap); // Falls kein Ziel gesetzt ist, neues wählen
         }
     }
 
     // Methode, um ein neues zufälliges Ziel auf einem "grass"-Tile zu setzen
     setRandomTarget(tilemap) {
-        let targetTile;
-        do {
-            this.targetX = Math.floor(Math.random() * tilemap[0].length);
-            this.targetY = Math.floor(Math.random() * tilemap.length);
-            targetTile = tilemap[this.targetY][this.targetX];
-        } while (targetTile !== 'grass'); // Wiederhole, bis ein "grass"-Tile gefunden wird
+        let directions = [0, 1, 2, 3]; // 0=oben, 1=rechts, 2=unten, 3=links
+        let found = false;
+    
+        while (directions.length > 0 && !found) {
+            let index = Math.floor(Math.random() * directions.length);
+            let direction = directions.splice(index, 1)[0]; // Eine Richtung zufällig auswählen & entfernen
+            
+            let newX = this.x;
+            let newY = this.y;
+    
+            switch (direction) {
+                case 0: newY -= 1; break;
+                case 1: newX += 1; break;
+                case 2: newY += 1; break;
+                case 3: newX -= 1; break;
+            }
+    
+            if (tilemap[newY] && tilemap[newY][newX] === 'grass') {
+                this.targetX = newX;
+                this.targetY = newY;
+                found = true;
+            }
+        }
     }
 }

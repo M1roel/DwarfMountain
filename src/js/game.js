@@ -2,18 +2,20 @@ import { Dwarf } from '../models/dwarf.class.js';
 import { Level } from '../levels/level.js';
 
 let lastMoveTime = 0; // Zeitstempel der letzten Bewegung
-const MOVE_INTERVAL = 500; // Intervall in Millisekunden (0,5 Sekunden)
+const TILE_SIZE = 12;
+const MOVE_INTERVAL = 100; // Intervall in Millisekunden (0,5 Sekunden)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const level = new Level(100, 100);
-const dwarf = new Dwarf(25, 25); // Setze den Zwerg in der Mitte der Map
+canvas.width = level.width * TILE_SIZE;
+canvas.height = level.height * TILE_SIZE;
 const dwarves = [
     generateDwarfOnGrass(level.tilemap),
     generateDwarfOnGrass(level.tilemap)
 ];
 
 // Größe der Tiles auf der Map
-const TILE_SIZE = 12;
+
 
 // Bild-Cache
 const imageCache = {};
@@ -72,17 +74,16 @@ function drawDwarves(dwarves) {
 
 // Spiel-Loop (Rendern)
 function gameLoop(timestamp) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvas löschen
-    drawMap(level); // Map zeichnen
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMap(level);
 
-    // Bewegung des Zwergs nur alle 0,5 Sekunden
     if (timestamp - lastMoveTime > MOVE_INTERVAL) {
-        dwarves.forEach((dwarf) => dwarf.move(level.tilemap)); // Bewege alle Zwerge
-        lastMoveTime = timestamp; // Zeitstempel aktualisieren
+        dwarves.forEach((dwarf) => dwarf.move(level.tilemap)); // Bewegung ausführen
+        lastMoveTime = timestamp;
     }
 
-    drawDwarves(dwarves); // Zeichne alle Zwerge
-    requestAnimationFrame(gameLoop); // Weiteres Frame anfordern
+    drawDwarves(dwarves);
+    requestAnimationFrame(gameLoop);
 }
 
 // Liste der Bilder, die vorgeladen werden müssen
