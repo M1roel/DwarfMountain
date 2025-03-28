@@ -92,7 +92,8 @@ const imagePaths = [
     'public/img/grass.jpg',
     'public/img/mountain.jpg',
     'public/img/wood.jpg',
-    'public/img/dwarf.jpg'
+    'public/img/dwarf.jpg',
+    'public/img/wood_home.jpg'
 ];
 
 // Bilder vorladen und Spiel starten

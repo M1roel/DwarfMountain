@@ -7,7 +7,7 @@ export class Dwarf {
     this.targetX = x; // Initialisiere Zielposition X
     this.targetY = y; // Initialisiere Zielposition Y
     this.inventory = [];
-    this.maxInventorySize = 1;
+    this.maxInventorySize = 5;
   }
 
   // Funktion, die die Bewegung zur Zielposition berechnet
@@ -18,6 +18,7 @@ export class Dwarf {
       this.targetX = undefined;
       this.targetY = undefined;
       this.collectRessources(tilemap);
+      this.buildWoodHome(tilemap);
     } else {
       this.setRandomTarget(tilemap); // Falls kein Ziel gesetzt ist, neues wählen
     }
@@ -132,4 +133,21 @@ export class Dwarf {
     }
     console.log('Kein Holz zum sammeln oder Inventar voll');
   }
+
+buildWoodHome(tilemap) {
+    if (this.inventory.length === this.maxInventorySize) {
+        const newY = this.y;
+        const newX = this.x;
+
+        if (tilemap[newY] && tilemap[newY][newX] === "grass") {
+            tilemap[newY][newX] = "wood_home";
+            this.inventory = [];
+            console.log("Holzhaus gebaut!");
+        } else {
+            console.log("Das aktuelle Feld ist nicht geeignet, um ein Holzhaus zu bauen!");
+        }
+    } else {
+        console.log("Nicht genug Holz!");
+    }
+}/*  */
 }
