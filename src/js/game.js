@@ -3,7 +3,7 @@ import { Level } from '../levels/level.js';
 
 let lastMoveTime = 0; // Zeitstempel der letzten Bewegung
 const TILE_SIZE = 12;
-const MOVE_INTERVAL = 100; // Intervall in Millisekunden (0,5 Sekunden)
+const MOVE_INTERVAL = 500; // Intervall in Millisekunden (0,5 Sekunden)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const level = new Level(100, 100);
