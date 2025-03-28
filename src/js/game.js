@@ -6,16 +6,13 @@ const TILE_SIZE = 12;
 const MOVE_INTERVAL = 500; // Intervall in Millisekunden (0,5 Sekunden)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const level = new Level(100, 100);
+const level = new Level(157, 73);
 canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
 const dwarves = [
     generateDwarfOnGrass(level.tilemap),
     generateDwarfOnGrass(level.tilemap)
 ];
-
-// Größe der Tiles auf der Map
-
 
 // Bild-Cache
 const imageCache = {};
