@@ -11,6 +11,7 @@ canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
 const dwarves = [
     generateDwarfOnGrass(level.tilemap),
+    generateDwarfOnGrass(level.tilemap),
     generateDwarfOnGrass(level.tilemap)
 ];
 
@@ -75,7 +76,7 @@ function gameLoop(timestamp) {
     drawMap(level);
 
     if (timestamp - lastMoveTime > MOVE_INTERVAL) {
-        dwarves.forEach((dwarf) => dwarf.move(level.tilemap)); // Bewegung ausführen
+        dwarves.forEach((dwarf) => dwarf.move(level.tilemap));
         lastMoveTime = timestamp;
     }
 
