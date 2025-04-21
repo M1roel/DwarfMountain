@@ -11,9 +11,6 @@ canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
 const dwarves = [
     generateDwarfOnGrass(level.tilemap),
-    generateDwarfOnGrass(level.tilemap),
-    generateDwarfOnGrass(level.tilemap),
-    generateDwarfOnGrass(level.tilemap),
     generateDwarfOnGrass(level.tilemap)
 ];
 
