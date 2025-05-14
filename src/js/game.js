@@ -1,15 +1,17 @@
 import { Dwarf } from "../models/dwarf.class.js";
 import { Level } from "../levels/level.js";
 
-let lastMoveTime = 0; // Zeitstempel der letzten Bewegung
+let lastMoveTime = 0;
 const TILE_SIZE = 12;
-const MOVE_INTERVAL = 500; // Intervall in Millisekunden (0,5 Sekunden)
+const MOVE_INTERVAL = 500;
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const level = new Level(157, 73);
 canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
 const dwarves = [
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
   generateDwarfOnGrass(level.tilemap),
   generateDwarfOnGrass(level.tilemap),
   generateDwarfOnGrass(level.tilemap)
