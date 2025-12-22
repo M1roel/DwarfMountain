@@ -134,20 +134,20 @@ export class Dwarf {
     console.log('Kein Holz zum sammeln oder Inventar voll');
   }
 
-buildWoodHome(tilemap) {
+  buildWoodHome(tilemap) {
     if (this.inventory.length === this.maxInventorySize) {
-        const newY = this.y;
-        const newX = this.x;
+      const newY = this.y;
+      const newX = this.x;
 
-        if (tilemap[newY] && tilemap[newY][newX] === "grass") {
-            tilemap[newY][newX] = "wood_home";
-            this.inventory = [];
-            console.log("Holzhaus gebaut!");
-        } else {
-            console.log("Das aktuelle Feld ist nicht geeignet, um ein Holzhaus zu bauen!");
-        }
+      if (tilemap[newY] && tilemap[newY][newX] === "grass") {
+        tilemap[newY][newX] = "wood_home";
+        this.inventory = [];
+        console.log("Holzhaus gebaut!");
+      } else {
+        console.log("Das aktuelle Feld ist nicht geeignet, um ein Holzhaus zu bauen!");
+      }
     } else {
-        console.log("Nicht genug Holz!");
+      console.log("Nicht genug Holz!");
     }
-}/*  */
+  }
 }

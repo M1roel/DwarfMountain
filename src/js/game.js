@@ -3,13 +3,34 @@ import { Level } from "../levels/level.js";
 
 let lastMoveTime = 0;
 const TILE_SIZE = 12;
-const MOVE_INTERVAL = 500;
+const MOVE_INTERVAL = 10;
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const level = new Level(157, 73);
 canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
 const dwarves = [
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
+  generateDwarfOnGrass(level.tilemap),
   generateDwarfOnGrass(level.tilemap),
   generateDwarfOnGrass(level.tilemap),
   generateDwarfOnGrass(level.tilemap),
