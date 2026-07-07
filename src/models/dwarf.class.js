@@ -2,6 +2,7 @@ import { GAME_CONFIG } from "../js/config.js";
 import { applyTargetPosition, setRandomTarget } from "../js/movementSystem.js";
 import { collectRessources } from "../js/resourceSystem.js";
 import { buildWoodHome } from "../js/buildingSystem.js";
+import { isWalkable } from "../js/passability.js";
 import {
   expandCave,
   findMountain,
@@ -51,7 +52,7 @@ export class Dwarf {
       const nextX = this.x + dx;
       const nextY = this.y + dy;
 
-      if (tilemap[nextY] && tilemap[nextY][nextX] === "grass") {
+      if (tilemap[nextY] && isWalkable(tilemap[nextY][nextX])) {
         const nextDistance = Math.abs(nextX - settlementCenter.x) + Math.abs(nextY - settlementCenter.y);
 
         if (nextDistance < currentDistance) {

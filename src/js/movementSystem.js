@@ -1,3 +1,5 @@
+import { isWalkable } from "./passability.js";
+
 export function applyTargetPosition(dwarf) {
   dwarf.x = dwarf.targetX;
   dwarf.y = dwarf.targetY;
@@ -31,7 +33,7 @@ export function setRandomTarget(dwarf, tilemap) {
         break;
     }
 
-    if (tilemap[newY] && tilemap[newY][newX] === "grass") {
+    if (tilemap[newY] && isWalkable(tilemap[newY][newX])) {
       dwarf.targetX = newX;
       dwarf.targetY = newY;
       dwarf.status = "moving";
