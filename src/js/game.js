@@ -1,6 +1,7 @@
 import { Dwarf } from "../models/dwarf.class.js";
 import { Level } from "../levels/level.js";
 import { GAME_CONFIG } from "./config.js";
+import { drawDwarves, drawMap } from "./renderer.js";
 
 let lastMoveTime = 0;
 const {
@@ -40,19 +41,6 @@ function preloadImages(imagePaths, callback) {
   });
 }
 
-// Funktion zum Zeichnen der Map
-function drawMap(level) {
-  for (let y = 0; y < level.height; y++) {
-    for (let x = 0; x < level.width; x++) {
-      let tile = level.tilemap[y][x];
-      const img = imageCache[`public/img/${tile}.jpg`];
-      if (img) {
-        ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-      }
-    }
-  }
-}
-
 // Funktion, um einen Zwerg auf einem "grass"-Tile zu generieren
 function generateDwarfOnGrass(tilemap) {
   let x, y;
@@ -64,33 +52,17 @@ function generateDwarfOnGrass(tilemap) {
   return new Dwarf(x, y); // Erstelle einen Zwerg auf der gefundenen Position
 }
 
-// Funktion zum Zeichnen der Zwerge
-function drawDwarves(dwarves) {
-  dwarves.forEach((dwarf) => {
-    const img = imageCache[dwarf.sprite];
-    if (img) {
-      ctx.drawImage(
-        img,
-        dwarf.x * TILE_SIZE,
-        dwarf.y * TILE_SIZE,
-        TILE_SIZE,
-        TILE_SIZE
-      );
-    }
-  });
-}
-
 // Spiel-Loop (Rendern)
 function gameLoop(timestamp) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawMap(level);
+  drawMap(ctx, level, imageCache);
 
   if (timestamp - lastMoveTime > MOVE_INTERVAL) {
     dwarves.forEach((dwarf) => dwarf.move(level.tilemap));
     lastMoveTime = timestamp;
   }
 
-  drawDwarves(dwarves);
+  drawDwarves(ctx, dwarves, imageCache);
   requestAnimationFrame(gameLoop);
 }
 
