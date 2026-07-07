@@ -21,6 +21,11 @@ export function createWorldState(level, dwarves, settlementCenter = null) {
     storage: {
       wood: 0,
     },
+    jobPriorities: {
+      gather_wood: 3,
+      deposit_wood: 3,
+      build_house: 3,
+    },
   };
 
   const getActiveLevel = () => state.levels[state.activeZ];
