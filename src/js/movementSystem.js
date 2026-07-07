@@ -34,7 +34,12 @@ export function setRandomTarget(dwarf, tilemap) {
     if (tilemap[newY] && tilemap[newY][newX] === "grass") {
       dwarf.targetX = newX;
       dwarf.targetY = newY;
+      dwarf.status = "moving";
       found = true;
     }
+  }
+
+  if (!found) {
+    dwarf.status = "idle";
   }
 }

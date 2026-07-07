@@ -47,6 +47,10 @@ const hudElements = {
   tileCount: document.getElementById("hudTileCount"),
   woodTotal: document.getElementById("hudWoodTotal"),
   woodHomes: document.getElementById("hudWoodHomes"),
+  statusIdle: document.getElementById("hudStatusIdle"),
+  statusMoving: document.getElementById("hudStatusMoving"),
+  statusGathering: document.getElementById("hudStatusGathering"),
+  statusBuilding: document.getElementById("hudStatusBuilding"),
   moveInterval: document.getElementById("hudMoveInterval"),
 };
 
@@ -98,8 +102,18 @@ function createHudUpdater(worldState, moveInterval) {
     const activeLevel = worldState.getActiveLevel();
     const surfaceLevel = worldState.getLevel(0);
     const tileCount = activeLevel.width * activeLevel.height;
+    const statusCounts = {
+      idle: 0,
+      moving: 0,
+      gathering: 0,
+      building: 0,
+    };
     const woodTotal = worldState.dwarves.reduce(
-      (total, dwarf) => total + dwarf.inventory.filter((item) => item === "wood").length,
+      (total, dwarf) => {
+        const status = statusCounts[dwarf.status] !== undefined ? dwarf.status : "idle";
+        statusCounts[status] += 1;
+        return total + dwarf.inventory.filter((item) => item === "wood").length;
+      },
       0
     );
     const woodHomes = countTileType(surfaceLevel.tilemap, "wood_home");
@@ -110,6 +124,10 @@ function createHudUpdater(worldState, moveInterval) {
     hudElements.tileCount.textContent = tileCount.toLocaleString("de-DE");
     hudElements.woodTotal.textContent = woodTotal.toString();
     hudElements.woodHomes.textContent = woodHomes.toString();
+    hudElements.statusIdle.textContent = statusCounts.idle.toString();
+    hudElements.statusMoving.textContent = statusCounts.moving.toString();
+    hudElements.statusGathering.textContent = statusCounts.gathering.toString();
+    hudElements.statusBuilding.textContent = statusCounts.building.toString();
     hudElements.moveInterval.textContent = moveInterval.toString();
   };
 
