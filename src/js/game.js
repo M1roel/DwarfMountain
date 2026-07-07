@@ -1,8 +1,8 @@
-import { Dwarf } from "../models/dwarf.class.js";
 import { Level } from "../levels/level.js";
 import { GAME_CONFIG } from "./config.js";
 import { drawDwarves, drawMap } from "./renderer.js";
 import { imageCache, preloadImages } from "./assetLoader.js";
+import { createInitialDwarves } from "./spawnSystem.js";
 
 let lastMoveTime = 0;
 const {
@@ -17,20 +17,7 @@ const ctx = canvas.getContext("2d");
 const level = new Level(MAP_WIDTH, MAP_HEIGHT);
 canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
-const dwarves = Array.from({ length: DWARF_COUNT }, () =>
-  generateDwarfOnGrass(level.tilemap)
-);
-
-// Funktion, um einen Zwerg auf einem "grass"-Tile zu generieren
-function generateDwarfOnGrass(tilemap) {
-  let x, y;
-  do {
-    x = Math.floor(Math.random() * tilemap[0].length); // Zufällige X-Koordinate
-    y = Math.floor(Math.random() * tilemap.length); // Zufällige Y-Koordinate
-  } while (tilemap[y][x] !== "grass"); // Wiederhole, bis ein "grass"-Tile gefunden wird
-
-  return new Dwarf(x, y); // Erstelle einen Zwerg auf der gefundenen Position
-}
+const dwarves = createInitialDwarves(level.tilemap, DWARF_COUNT);
 
 // Spiel-Loop (Rendern)
 function gameLoop(timestamp) {
