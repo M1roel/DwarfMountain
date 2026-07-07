@@ -17,6 +17,9 @@ export function createWorldState(level, dwarves) {
     dwarves,
     levels,
     activeZ: 0,
+    storage: {
+      wood: 0,
+    },
   };
 
   const getActiveLevel = () => state.levels[state.activeZ];

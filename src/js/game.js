@@ -46,6 +46,7 @@ const hudElements = {
   mapSize: document.getElementById("hudMapSize"),
   tileCount: document.getElementById("hudTileCount"),
   woodTotal: document.getElementById("hudWoodTotal"),
+  woodStorage: document.getElementById("hudWoodStorage"),
   woodHomes: document.getElementById("hudWoodHomes"),
   statusIdle: document.getElementById("hudStatusIdle"),
   statusMoving: document.getElementById("hudStatusMoving"),
@@ -123,6 +124,7 @@ function createHudUpdater(worldState, moveInterval) {
     hudElements.mapSize.textContent = `${activeLevel.width} x ${activeLevel.height}`;
     hudElements.tileCount.textContent = tileCount.toLocaleString("de-DE");
     hudElements.woodTotal.textContent = woodTotal.toString();
+    hudElements.woodStorage.textContent = worldState.storage.wood.toString();
     hudElements.woodHomes.textContent = woodHomes.toString();
     hudElements.statusIdle.textContent = statusCounts.idle.toString();
     hudElements.statusMoving.textContent = statusCounts.moving.toString();
