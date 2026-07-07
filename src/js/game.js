@@ -47,6 +47,7 @@ const hudElements = {
   tileCount: document.getElementById("hudTileCount"),
   woodTotal: document.getElementById("hudWoodTotal"),
   woodStorage: document.getElementById("hudWoodStorage"),
+  settlementCenter: document.getElementById("hudSettlementCenter"),
   woodHomes: document.getElementById("hudWoodHomes"),
   statusIdle: document.getElementById("hudStatusIdle"),
   statusMoving: document.getElementById("hudStatusMoving"),
@@ -98,6 +99,18 @@ function countTileType(tilemap, type) {
   return count;
 }
 
+function findTilePosition(tilemap, type) {
+  for (let y = 0; y < tilemap.length; y++) {
+    for (let x = 0; x < tilemap[y].length; x++) {
+      if (tilemap[y][x] === type) {
+        return { x, y, z: 0 };
+      }
+    }
+  }
+
+  return null;
+}
+
 function createHudUpdater(worldState, moveInterval) {
   const updateHud = () => {
     const activeLevel = worldState.getActiveLevel();
@@ -125,6 +138,9 @@ function createHudUpdater(worldState, moveInterval) {
     hudElements.tileCount.textContent = tileCount.toLocaleString("de-DE");
     hudElements.woodTotal.textContent = woodTotal.toString();
     hudElements.woodStorage.textContent = worldState.storage.wood.toString();
+    hudElements.settlementCenter.textContent = worldState.settlementCenter
+      ? `${worldState.settlementCenter.x}/${worldState.settlementCenter.y}`
+      : "-";
     hudElements.woodHomes.textContent = woodHomes.toString();
     hudElements.statusIdle.textContent = statusCounts.idle.toString();
     hudElements.statusMoving.textContent = statusCounts.moving.toString();
@@ -178,7 +194,8 @@ settingsForm.addEventListener("submit", (event) => {
 
   const level = new Level(mapWidth, mapHeight);
   const dwarves = createInitialDwarves(level.tilemap, dwarfCount);
-  const worldState = createWorldState(level, dwarves);
+  const settlementCenter = findTilePosition(level.tilemap, "camp_center");
+  const worldState = createWorldState(level, dwarves, settlementCenter);
 
   canvas.width = worldState.getActiveLevel().width * TILE_SIZE;
   canvas.height = worldState.getActiveLevel().height * TILE_SIZE;
