@@ -1,6 +1,7 @@
 import { JOB_TYPES } from "./jobModel.js";
 
 const BUILD_HOUSE_COST = 5;
+const BUILD_HOUSE_RADIUS = 5;
 
 function getActiveTilemap(worldState) {
   if (!worldState) {
@@ -23,11 +24,19 @@ function hasWoodInInventory(dwarf) {
 }
 
 function canBuildHouseNow(dwarf, worldState, tilemap) {
-  if (!dwarf || !worldState?.storage || !tilemap) {
+  if (!dwarf || !worldState?.storage || !worldState?.settlementCenter || !tilemap) {
     return false;
   }
 
   if (worldState.storage.wood < BUILD_HOUSE_COST) {
+    return false;
+  }
+
+  const distanceToSettlementCenter =
+    Math.abs(dwarf.x - worldState.settlementCenter.x) +
+    Math.abs(dwarf.y - worldState.settlementCenter.y);
+
+  if (distanceToSettlementCenter > BUILD_HOUSE_RADIUS) {
     return false;
   }
 
