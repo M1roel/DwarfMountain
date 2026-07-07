@@ -15,10 +15,12 @@ export function collectRessources(dwarf, tilemap) {
       dwarf.inventory.length < dwarf.maxInventorySize
     ) {
       dwarf.inventory.push("wood");
+      dwarf.status = "gathering";
       console.log("Holz gesammelt!");
       tilemap[newY][newX] = "grass";
-      return;
+      return true;
     }
   }
   console.log("Kein Holz zum sammeln oder Inventar voll");
+  return false;
 }

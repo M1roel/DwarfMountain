@@ -18,14 +18,20 @@ export class Dwarf {
     this.targetY = y; // Initialisiere Zielposition Y
     this.inventory = [];
     this.maxInventorySize = GAME_CONFIG.INVENTORY_LIMIT;
+    this.status = "idle";
   }
 
   // Funktion, die die Bewegung zur Zielposition berechnet
   move(tilemap) {
     if (this.targetX !== undefined && this.targetY !== undefined) {
       applyTargetPosition(this);
-      this.collectRessources(tilemap);
-      this.buildWoodHome(tilemap);
+      this.status = "moving";
+      const gathered = this.collectRessources(tilemap);
+      const built = this.buildWoodHome(tilemap);
+
+      if (!gathered && !built) {
+        this.status = "idle";
+      }
     } else {
       setRandomTarget(this, tilemap); // Falls kein Ziel gesetzt ist, neues wählen
     }
@@ -49,10 +55,10 @@ export class Dwarf {
   }
 
   collectRessources(tilemap) {
-    collectRessources(this, tilemap);
+    return collectRessources(this, tilemap);
   }
 
   buildWoodHome(tilemap) {
-    buildWoodHome(this, tilemap);
+    return buildWoodHome(this, tilemap);
   }
 }
