@@ -3,6 +3,7 @@ import { applyTargetPosition, setRandomTarget } from "../js/movementSystem.js";
 import { collectRessources } from "../js/resourceSystem.js";
 import { buildWoodHome } from "../js/buildingSystem.js";
 import { isWalkable } from "../js/passability.js";
+import { JOB_TYPES } from "../js/jobModel.js";
 import {
   expandCave,
   findMountain,
@@ -10,7 +11,8 @@ import {
 } from "../js/caveExperimentalSystem.js";
 
 export class Dwarf {
-  constructor(x, y) {
+  constructor(x, y, id = null) {
+    this.id = id;
     this.x = x; // Startposition X
     this.y = y; // Startposition Y
     this.sprite = "public/img/dwarf.jpg"; // Dein Zwerg-Sprite
@@ -25,6 +27,9 @@ export class Dwarf {
     this.lastPositions = [];
     this.stuckCounter = 0;
     this.lastDistanceToTarget = null;
+    this.currentJobId = null;
+    this.currentJobType = JOB_TYPES.IDLE;
+    this.jobState = null;
   }
 
   hasWoodInInventory() {

@@ -1,13 +1,17 @@
 import { Dwarf } from "../models/dwarf.class.js";
 
 export function generateDwarfOnGrass(tilemap) {
+  return generateDwarfOnGrassWithId(tilemap, null);
+}
+
+function generateDwarfOnGrassWithId(tilemap, id) {
   let x, y;
   do {
     x = Math.floor(Math.random() * tilemap[0].length); // Zufaellige X-Koordinate
     y = Math.floor(Math.random() * tilemap.length); // Zufaellige Y-Koordinate
   } while (tilemap[y][x] !== "grass"); // Wiederhole, bis ein "grass"-Tile gefunden wird
 
-  return new Dwarf(x, y); // Erstelle einen Zwerg auf der gefundenen Position
+  return new Dwarf(x, y, id); // Erstelle einen Zwerg auf der gefundenen Position
 }
 
 function findSettlementCenter(tilemap) {
@@ -56,11 +60,15 @@ export function createInitialDwarves(tilemap, dwarfCount) {
   const settlementCenter = findSettlementCenter(tilemap);
 
   if (!settlementCenter) {
-    return Array.from({ length: dwarfCount }, () => generateDwarfOnGrass(tilemap));
+    return Array.from({ length: dwarfCount }, (_, index) =>
+      generateDwarfOnGrassWithId(tilemap, index)
+    );
   }
 
-  return Array.from({ length: dwarfCount }, () => {
+  return Array.from({ length: dwarfCount }, (_, index) => {
     const spawnPoint = getSpawnAroundCenter(tilemap, settlementCenter);
-    return spawnPoint ? new Dwarf(spawnPoint.x, spawnPoint.y) : generateDwarfOnGrass(tilemap);
+    return spawnPoint
+      ? new Dwarf(spawnPoint.x, spawnPoint.y, index)
+      : generateDwarfOnGrassWithId(tilemap, index);
   });
 }
