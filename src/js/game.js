@@ -17,6 +17,7 @@ const {
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const startScreen = document.getElementById("startScreen");
+const gameHud = document.getElementById("gameHud");
 const settingsForm = document.getElementById("settingsForm");
 const resetDefaultsButton = document.getElementById("resetDefaults");
 const settings = {
@@ -38,6 +39,15 @@ const summaryElements = {
   tiles: document.getElementById("summaryTiles"),
   dwarves: document.getElementById("summaryDwarves"),
   scale: document.getElementById("summaryScale"),
+};
+const hudElements = {
+  dwarfCount: document.getElementById("hudDwarfCount"),
+  activeZ: document.getElementById("hudActiveZ"),
+  mapSize: document.getElementById("hudMapSize"),
+  tileCount: document.getElementById("hudTileCount"),
+  woodTotal: document.getElementById("hudWoodTotal"),
+  woodHomes: document.getElementById("hudWoodHomes"),
+  moveInterval: document.getElementById("hudMoveInterval"),
 };
 
 const defaults = {
@@ -71,6 +81,40 @@ function updateWorldSummary() {
   summaryElements.tiles.textContent = tileCount.toLocaleString("de-DE");
   summaryElements.dwarves.textContent = dwarfCount.toString();
   summaryElements.scale.textContent = getSettlementScale(tileCount, dwarfCount);
+}
+
+function countTileType(tilemap, type) {
+  let count = 0;
+  for (let y = 0; y < tilemap.length; y++) {
+    for (let x = 0; x < tilemap[y].length; x++) {
+      if (tilemap[y][x] === type) count++;
+    }
+  }
+  return count;
+}
+
+function createHudUpdater(worldState, moveInterval) {
+  const updateHud = () => {
+    const activeLevel = worldState.getActiveLevel();
+    const surfaceLevel = worldState.getLevel(0);
+    const tileCount = activeLevel.width * activeLevel.height;
+    const woodTotal = worldState.dwarves.reduce(
+      (total, dwarf) => total + dwarf.inventory.filter((item) => item === "wood").length,
+      0
+    );
+    const woodHomes = countTileType(surfaceLevel.tilemap, "wood_home");
+
+    hudElements.dwarfCount.textContent = worldState.dwarves.length.toString();
+    hudElements.activeZ.textContent = worldState.activeZ.toString();
+    hudElements.mapSize.textContent = `${activeLevel.width} x ${activeLevel.height}`;
+    hudElements.tileCount.textContent = tileCount.toLocaleString("de-DE");
+    hudElements.woodTotal.textContent = woodTotal.toString();
+    hudElements.woodHomes.textContent = woodHomes.toString();
+    hudElements.moveInterval.textContent = moveInterval.toString();
+  };
+
+  updateHud();
+  return window.setInterval(updateHud, 250);
 }
 
 function applyDefaults() {
@@ -121,6 +165,9 @@ settingsForm.addEventListener("submit", (event) => {
 
   startScreen.classList.add("is-hidden");
   canvas.classList.remove("is-hidden");
+  gameHud.classList.remove("is-hidden");
+
+  createHudUpdater(worldState, moveInterval);
 
   preloadImages(imagePaths, () =>
     startGameLoop({

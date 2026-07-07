@@ -94,6 +94,17 @@
 
     <canvas id="gameCanvas" class="game-canvas is-hidden" width="1920" height="1080"></canvas>
 
+    <aside id="gameHud" class="game-hud is-hidden" aria-live="polite">
+        <h2>Expeditionsstatus</h2>
+        <p><span>Zwerge</span><strong id="hudDwarfCount">0</strong></p>
+        <p><span>Aktive Ebene</span><strong id="hudActiveZ">0</strong></p>
+        <p><span>Kartengröße</span><strong id="hudMapSize">0 x 0</strong></p>
+        <p><span>Felder gesamt</span><strong id="hudTileCount">0</strong></p>
+        <p><span>Holz gesamt</span><strong id="hudWoodTotal">0</strong></p>
+        <p><span>Holz-Hütten</span><strong id="hudWoodHomes">0</strong></p>
+        <p><span>Move Interval</span><strong id="hudMoveInterval">0</strong></p>
+    </aside>
+
     <script type="module" src="./src/js/game.js"></script>
 </body>
 </html>
