@@ -1,5 +1,6 @@
 import { GAME_CONFIG } from "../js/config.js";
 import { applyTargetPosition, setRandomTarget } from "../js/movementSystem.js";
+import { collectRessources } from "../js/resourceSystem.js";
 
 export class Dwarf {
   constructor(x, y) {
@@ -80,28 +81,7 @@ export class Dwarf {
   }
 
   collectRessources(tilemap) {
-    const directions = [
-      [-1, 0],
-      [1, 0],
-      [0, -1],
-      [0, 1],
-    ];
-
-    for (let [dy, dx] of directions) {
-      const newY = this.y + dy;
-      const newX = this.x + dx;
-
-      if (
-        tilemap[newY] && tilemap[newY][newX] === "wood" &&
-        this.inventory.length < this.maxInventorySize
-      ) {
-        this.inventory.push("wood");
-        console.log("Holz gesammelt!");
-        tilemap[newY][newX] = "grass";
-        return;
-      }
-    }
-    console.log('Kein Holz zum sammeln oder Inventar voll');
+    collectRessources(this, tilemap);
   }
 
   buildWoodHome(tilemap) {
