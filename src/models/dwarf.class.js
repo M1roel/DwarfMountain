@@ -1,6 +1,7 @@
 import { GAME_CONFIG } from "../js/config.js";
 import { applyTargetPosition, setRandomTarget } from "../js/movementSystem.js";
 import { collectRessources } from "../js/resourceSystem.js";
+import { buildWoodHome } from "../js/buildingSystem.js";
 
 export class Dwarf {
   constructor(x, y) {
@@ -85,19 +86,6 @@ export class Dwarf {
   }
 
   buildWoodHome(tilemap) {
-    if (this.inventory.length === this.maxInventorySize) {
-      const newY = this.y;
-      const newX = this.x;
-
-      if (tilemap[newY] && tilemap[newY][newX] === "grass") {
-        tilemap[newY][newX] = "wood_home";
-        this.inventory = [];
-        console.log("Holzhaus gebaut!");
-      } else {
-        console.log("Das aktuelle Feld ist nicht geeignet, um ein Holzhaus zu bauen!");
-      }
-    } else {
-      console.log("Nicht genug Holz!");
-    }
+    buildWoodHome(this, tilemap);
   }
 }
