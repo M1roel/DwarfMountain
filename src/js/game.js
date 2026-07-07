@@ -33,6 +33,12 @@ const settingOutputs = {
   moveInterval: document.getElementById("moveIntervalValue"),
   inventoryLimit: document.getElementById("inventoryLimitValue"),
 };
+const summaryElements = {
+  dimensions: document.getElementById("summaryDimensions"),
+  tiles: document.getElementById("summaryTiles"),
+  dwarves: document.getElementById("summaryDwarves"),
+  scale: document.getElementById("summaryScale"),
+};
 
 const defaults = {
   mapWidth: DEFAULT_MAP_WIDTH,
@@ -46,15 +52,40 @@ function updateOutput(name) {
   settingOutputs[name].textContent = settings[name].value;
 }
 
+function getSettlementScale(tileCount, dwarfCount) {
+  const intensity = tileCount * 0.5 + dwarfCount * 120;
+  if (intensity < 5000) return "Sehr klein";
+  if (intensity < 12000) return "Kleine Siedlung";
+  if (intensity < 22000) return "Mittlere Kolonie";
+  if (intensity < 34000) return "Große Expedition";
+  return "Große Festung";
+}
+
+function updateWorldSummary() {
+  const mapWidth = Number(settings.mapWidth.value);
+  const mapHeight = Number(settings.mapHeight.value);
+  const dwarfCount = Number(settings.dwarfCount.value);
+  const tileCount = mapWidth * mapHeight;
+
+  summaryElements.dimensions.textContent = `${mapWidth} x ${mapHeight}`;
+  summaryElements.tiles.textContent = tileCount.toLocaleString("de-DE");
+  summaryElements.dwarves.textContent = dwarfCount.toString();
+  summaryElements.scale.textContent = getSettlementScale(tileCount, dwarfCount);
+}
+
 function applyDefaults() {
   Object.keys(settings).forEach((name) => {
     settings[name].value = defaults[name];
     updateOutput(name);
   });
+  updateWorldSummary();
 }
 
 Object.keys(settings).forEach((name) => {
-  settings[name].addEventListener("input", () => updateOutput(name));
+  settings[name].addEventListener("input", () => {
+    updateOutput(name);
+    updateWorldSummary();
+  });
 });
 
 resetDefaultsButton.addEventListener("click", applyDefaults);

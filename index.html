@@ -11,15 +11,38 @@
     <main class="start-screen" id="startScreen">
         <section class="panel" aria-labelledby="title">
             <header class="panel-header">
-                <h1 id="title">Dwarf Mountain</h1>
-                <p>Siedlung vorbereiten und dann den Stollen starten.</p>
+                <h1 id="title">DWARF MOUNTAIN</h1>
+                <p>Bereite deine Expedition vor.</p>
             </header>
 
             <div class="decor" aria-hidden="true">
-                <svg viewBox="0 0 240 60" class="mountain-strip">
-                    <path d="M0 60 L30 28 L55 60 Z M45 60 L88 18 L125 60 Z M110 60 L150 26 L188 60 Z M170 60 L210 20 L240 60 Z"></path>
+                <svg viewBox="0 0 860 210" class="mountain-strip" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="mountainSky" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#3b322d"/>
+                            <stop offset="100%" stop-color="#241f1b"/>
+                        </linearGradient>
+                        <linearGradient id="mountainLayerBack" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#4f4640"/>
+                            <stop offset="100%" stop-color="#3a332e"/>
+                        </linearGradient>
+                        <linearGradient id="mountainLayerFront" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#665b53"/>
+                            <stop offset="100%" stop-color="#4a413a"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="860" height="210" fill="url(#mountainSky)"></rect>
+                    <path d="M0 210 L90 140 L170 170 L255 108 L330 154 L410 96 L500 162 L575 118 L660 166 L742 125 L860 210 Z" fill="url(#mountainLayerBack)"></path>
+                    <path d="M0 210 L78 150 L142 184 L214 101 L284 159 L376 82 L455 171 L534 107 L612 176 L696 92 L768 169 L860 124 L860 210 Z" fill="url(#mountainLayerFront)"></path>
+                    <path d="M560 182 L588 152 L615 182 Z" fill="#1a1714"></path>
+                    <rect x="585" y="182" width="6" height="11" fill="#342d27"></rect>
+                    <rect x="598" y="176" width="20" height="16" fill="#3a322b"></rect>
+                    <polygon points="595,176 608,162 622,176" fill="#4c4138"></polygon>
                 </svg>
-                <div class="torch"></div>
+                <div class="torch-wrap">
+                    <div class="torch"></div>
+                    <div class="smoke"></div>
+                </div>
             </div>
 
             <form id="settingsForm" class="settings-grid">
@@ -52,6 +75,14 @@
                     <input type="range" id="inventoryLimit" name="inventoryLimit" min="1" max="20" step="1">
                     <output for="inventoryLimit" id="inventoryLimitValue"></output>
                 </label>
+
+                <section class="world-summary" aria-live="polite">
+                    <h2>Weltzusammenfassung</h2>
+                    <p><span>Weltgröße</span><strong id="summaryDimensions">157 x 73</strong></p>
+                    <p><span>Felder</span><strong id="summaryTiles">11461</strong></p>
+                    <p><span>Zwerge</span><strong id="summaryDwarves">26</strong></p>
+                    <p><span>Geschätzte Startgröße</span><strong id="summaryScale">Kleine Siedlung</strong></p>
+                </section>
 
                 <div class="actions">
                     <button type="button" id="resetDefaults">Standards</button>
