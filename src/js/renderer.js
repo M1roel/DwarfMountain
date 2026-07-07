@@ -9,6 +9,12 @@ export function drawMap(ctx, level, imageCache) {
       const img = imageCache[`public/img/${tile}.jpg`];
       if (img) {
         ctx.drawImage(img, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      } else if (tile === "stone") {
+        ctx.fillStyle = "#6a6a6a";
+        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      } else if (tile === "unknown") {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
       }
     }
   }
