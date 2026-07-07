@@ -118,7 +118,7 @@ export class Dwarf {
     }
 
     if (this.buildingAction) {
-      const buildResult = this.buildWoodHome(tilemap);
+      const buildResult = this.buildWoodHome(tilemap, worldState);
       if (buildResult !== "in_progress") {
         this.status = "idle";
       }
@@ -128,12 +128,12 @@ export class Dwarf {
     if (this.gatheringAction) {
       const gatherResult = this.collectRessources(tilemap);
       if (gatherResult === "completed") {
-        const buildResult = this.buildWoodHome(tilemap);
+        const buildResult = this.buildWoodHome(tilemap, worldState);
         if (buildResult === "none" || buildResult === "cancelled") {
           this.status = "idle";
         }
       } else if (gatherResult === "cancelled") {
-        const buildResult = this.buildWoodHome(tilemap);
+        const buildResult = this.buildWoodHome(tilemap, worldState);
         if (buildResult === "none" || buildResult === "cancelled") {
           this.status = "idle";
         }
@@ -150,7 +150,7 @@ export class Dwarf {
         return;
       }
 
-      const buildResult = this.buildWoodHome(tilemap);
+      const buildResult = this.buildWoodHome(tilemap, worldState);
       if (buildResult === "none" || buildResult === "cancelled") {
         this.status = "idle";
       }
@@ -180,7 +180,7 @@ export class Dwarf {
     return collectRessources(this, tilemap);
   }
 
-  buildWoodHome(tilemap) {
-    return buildWoodHome(this, tilemap);
+  buildWoodHome(tilemap, worldState) {
+    return buildWoodHome(this, tilemap, worldState);
   }
 }

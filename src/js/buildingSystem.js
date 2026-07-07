@@ -1,12 +1,10 @@
 import { GAME_CONFIG } from "./config.js";
 
-function finalizeBuilding(dwarf, tilemap, targetX, targetY) {
-  if (
-    tilemap[targetY] && tilemap[targetY][targetX] === "grass" &&
-    dwarf.inventory.length === dwarf.maxInventorySize
-  ) {
+const WOOD_HOME_COST = 5;
+
+function finalizeBuilding(tilemap, targetX, targetY) {
+  if (tilemap[targetY] && tilemap[targetY][targetX] === "grass") {
     tilemap[targetY][targetX] = "wood_home";
-    dwarf.inventory = [];
     console.log("Holzhaus gebaut!");
     return "completed";
   }
@@ -15,7 +13,9 @@ function finalizeBuilding(dwarf, tilemap, targetX, targetY) {
   return "cancelled";
 }
 
-export function buildWoodHome(dwarf, tilemap) {
+export function buildWoodHome(dwarf, tilemap, worldState) {
+  const storage = worldState?.storage;
+
   if (dwarf.buildingAction) {
     dwarf.status = "building";
     dwarf.buildingAction.remainingTicks -= 1;
@@ -26,14 +26,21 @@ export function buildWoodHome(dwarf, tilemap) {
 
     const { targetX, targetY } = dwarf.buildingAction;
     dwarf.buildingAction = null;
-    return finalizeBuilding(dwarf, tilemap, targetX, targetY);
+    const buildResult = finalizeBuilding(tilemap, targetX, targetY);
+
+    if (buildResult === "cancelled" && storage) {
+      storage.wood += WOOD_HOME_COST;
+    }
+
+    return buildResult;
   }
 
-  if (dwarf.inventory.length === dwarf.maxInventorySize) {
+  if (storage?.wood >= WOOD_HOME_COST) {
     const newY = dwarf.y;
     const newX = dwarf.x;
 
     if (tilemap[newY] && tilemap[newY][newX] === "grass") {
+      storage.wood -= WOOD_HOME_COST;
       dwarf.buildingAction = {
         targetX: newX,
         targetY: newY,
@@ -47,7 +54,13 @@ export function buildWoodHome(dwarf, tilemap) {
       }
 
       dwarf.buildingAction = null;
-      return finalizeBuilding(dwarf, tilemap, newX, newY);
+      const buildResult = finalizeBuilding(tilemap, newX, newY);
+
+      if (buildResult === "cancelled") {
+        storage.wood += WOOD_HOME_COST;
+      }
+
+      return buildResult;
     } else {
       console.log("Das aktuelle Feld ist nicht geeignet, um ein Holzhaus zu bauen!");
     }
