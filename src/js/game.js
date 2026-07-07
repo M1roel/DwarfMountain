@@ -69,6 +69,13 @@ const defaults = {
   inventoryLimit: DEFAULT_INVENTORY_LIMIT,
 };
 
+const JOB_TYPE_ORDER = [
+  JOB_TYPES.IDLE,
+  JOB_TYPES.GATHER_WOOD,
+  JOB_TYPES.DEPOSIT_WOOD,
+  JOB_TYPES.BUILD_HOUSE,
+];
+
 function updateOutput(name) {
   settingOutputs[name].textContent = settings[name].value;
 }
@@ -127,17 +134,14 @@ function createHudUpdater(worldState, moveInterval) {
       gathering: 0,
       building: 0,
     };
-    const jobCounts = {
-      [JOB_TYPES.IDLE]: 0,
-      [JOB_TYPES.GATHER_WOOD]: 0,
-      [JOB_TYPES.DEPOSIT_WOOD]: 0,
-      [JOB_TYPES.BUILD_HOUSE]: 0,
-    };
+    const jobCounts = Object.fromEntries(
+      JOB_TYPE_ORDER.map((jobType) => [jobType, 0])
+    );
     const woodTotal = worldState.dwarves.reduce(
       (total, dwarf) => {
         const status = statusCounts[dwarf.status] !== undefined ? dwarf.status : "idle";
         statusCounts[status] += 1;
-        const jobType = jobCounts[dwarf.currentJobType] !== undefined
+        const jobType = JOB_TYPE_ORDER.includes(dwarf.currentJobType)
           ? dwarf.currentJobType
           : JOB_TYPES.IDLE;
         jobCounts[jobType] += 1;
