@@ -22,6 +22,9 @@ export class Dwarf {
     this.status = "idle";
     this.gatheringAction = null;
     this.buildingAction = null;
+    this.lastPositions = [];
+    this.stuckCounter = 0;
+    this.lastDistanceToTarget = null;
   }
 
   hasWoodInInventory() {
@@ -38,34 +41,96 @@ export class Dwarf {
     );
   }
 
-  getTransportStep(tilemap, settlementCenter) {
+  resetTransportTracking() {
+    this.lastPositions = [];
+    this.stuckCounter = 0;
+    this.lastDistanceToTarget = null;
+  }
+
+  rememberCurrentPosition() {
+    const key = `${this.x},${this.y}`;
+
+    this.lastPositions.push(key);
+    if (this.lastPositions.length > 6) {
+      this.lastPositions.shift();
+    }
+  }
+
+  wasRecentlyVisited(x, y) {
+    return this.lastPositions.includes(`${x},${y}`);
+  }
+
+  updateTransportProgress(distanceToTarget) {
+    if (
+      this.lastDistanceToTarget === null ||
+      distanceToTarget < this.lastDistanceToTarget
+    ) {
+      this.stuckCounter = 0;
+    } else {
+      this.stuckCounter += 1;
+    }
+
+    this.lastDistanceToTarget = distanceToTarget;
+  }
+
+  getTransportStep(tilemap, settlementCenter, escapeMode = false) {
     const currentDistance = Math.abs(this.x - settlementCenter.x) + Math.abs(this.y - settlementCenter.y);
     const neighbors = [
       { x: this.x + 1, y: this.y },
       { x: this.x - 1, y: this.y },
       { x: this.x, y: this.y + 1 },
       { x: this.x, y: this.y - 1 },
-    ].filter(({ x, y }) => tilemap[y] && isWalkable(tilemap[y][x]));
+    ]
+      .filter(({ x, y }) => tilemap[y] && isWalkable(tilemap[y][x]))
+      .map(({ x, y }) => ({
+        x,
+        y,
+        distance: Math.abs(x - settlementCenter.x) + Math.abs(y - settlementCenter.y),
+      }));
 
     if (neighbors.length === 0) {
       return null;
     }
 
-    const reducingNeighbors = neighbors
-      .map(({ x, y }) => ({
-        x,
-        y,
-        distance: Math.abs(x - settlementCenter.x) + Math.abs(y - settlementCenter.y),
-      }))
-      .filter(({ distance }) => distance < currentDistance);
+    const nonRecentNeighbors = neighbors.filter(
+      ({ x, y }) => !this.wasRecentlyVisited(x, y)
+    );
+
+    if (escapeMode) {
+      if (nonRecentNeighbors.length === 0) {
+        return null;
+      }
+
+      nonRecentNeighbors.sort((a, b) => a.distance - b.distance);
+      return nonRecentNeighbors[0];
+    }
+
+    const reducingNeighbors = neighbors.filter(
+      ({ distance }) => distance < currentDistance
+    );
+
+    const reducingNonRecentNeighbors = reducingNeighbors.filter(
+      ({ x, y }) => !this.wasRecentlyVisited(x, y)
+    );
+
+    if (reducingNonRecentNeighbors.length > 0) {
+      reducingNonRecentNeighbors.sort((a, b) => a.distance - b.distance);
+      return reducingNonRecentNeighbors[0];
+    }
 
     if (reducingNeighbors.length > 0) {
       reducingNeighbors.sort((a, b) => a.distance - b.distance);
       return reducingNeighbors[0];
     }
 
+    if (nonRecentNeighbors.length > 0) {
+      const randomNonRecent =
+        nonRecentNeighbors[Math.floor(Math.random() * nonRecentNeighbors.length)];
+      return randomNonRecent;
+    }
+
     const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
-    return { x: randomNeighbor.x, y: randomNeighbor.y, distance: currentDistance };
+    return randomNeighbor;
   }
 
   runTransportMode(tilemap, worldState) {
@@ -81,14 +146,31 @@ export class Dwarf {
 
     if (this.targetX !== undefined && this.targetY !== undefined) {
       applyTargetPosition(this);
+      this.rememberCurrentPosition();
+
+      const distanceAfterMove =
+        Math.abs(this.x - settlementCenter.x) +
+        Math.abs(this.y - settlementCenter.y);
+      this.updateTransportProgress(distanceAfterMove);
       this.status = "moving";
       return;
     }
 
-    const nextStep = this.getTransportStep(tilemap, settlementCenter);
+    const currentDistance =
+      Math.abs(this.x - settlementCenter.x) +
+      Math.abs(this.y - settlementCenter.y);
+
+    if (this.lastDistanceToTarget === null) {
+      this.lastDistanceToTarget = currentDistance;
+    }
+
+    const isStuck = this.stuckCounter >= 3;
+    const nextStep = this.getTransportStep(tilemap, settlementCenter, isStuck);
 
     if (!nextStep) {
       this.status = "idle";
+      this.updateTransportProgress(currentDistance);
+      this.rememberCurrentPosition();
       return;
     }
 
@@ -108,6 +190,7 @@ export class Dwarf {
     this.targetX = undefined;
     this.targetY = undefined;
     this.status = "idle";
+    this.resetTransportTracking();
   }
 
   // Funktion, die die Bewegung zur Zielposition berechnet
@@ -116,6 +199,8 @@ export class Dwarf {
       this.runTransportMode(tilemap, worldState);
       return;
     }
+
+    this.resetTransportTracking();
 
     if (this.buildingAction) {
       const buildResult = this.buildWoodHome(tilemap, worldState);
