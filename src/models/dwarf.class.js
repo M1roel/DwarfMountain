@@ -2,6 +2,11 @@ import { GAME_CONFIG } from "../js/config.js";
 import { applyTargetPosition, setRandomTarget } from "../js/movementSystem.js";
 import { collectRessources } from "../js/resourceSystem.js";
 import { buildWoodHome } from "../js/buildingSystem.js";
+import {
+  expandCave,
+  findMountain,
+  startDigging,
+} from "../js/caveExperimentalSystem.js";
 
 export class Dwarf {
   constructor(x, y) {
@@ -32,53 +37,15 @@ export class Dwarf {
   }
 
   findMountain(tilemap) {
-    for (let y = 0; y < tilemap.length - 4; y++) {
-      for (let x = 0; x < tilemap[0].length - 4; x++) {
-        let isMountain = true;
-
-        // Prüfe, ob das ganze 5x5-Feld aus "mountain" besteht
-        for (let i = 0; i < 5; i++) {
-          for (let j = 0; j < 5; j++) {
-            if (tilemap[y + i][x + j] !== "mountain") {
-              isMountain = false;
-              break;
-            }
-          }
-          if (!isMountain) break;
-        }
-
-        if (isMountain) {
-          this.targetX = x + 2; // Setze das Ziel in die Mitte des Berges
-          this.targetY = y + 2;
-          this.state = "digging"; // Wechsle in den Grab-Modus
-          return;
-        }
-      }
-    }
+    findMountain(this, tilemap);
   }
 
   startDigging(tilemap) {
-    // Gräbt 2 Felder in den Berg
-    for (let i = 0; i < 2; i++) {
-      if (tilemap[this.y + i] && tilemap[this.y + i][this.x] === "mountain") {
-        tilemap[this.y + i][this.x] = "grass"; // Ändere das Feld zu "grass"
-      }
-    }
-
-    this.state = "expanding"; // Wechsle in den Modus, um ein 3x3-Feld zu graben
+    startDigging(this, tilemap);
   }
 
   expandCave(tilemap) {
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        let newY = this.y + dy;
-        let newX = this.x + dx;
-
-        if (tilemap[newY] && tilemap[newY][newX] === "mountain") {
-          tilemap[newY][newX] = "grass"; // Ersetze das Tile mit "grass"
-        }
-      }
-    }
+    expandCave(this, tilemap);
   }
 
   collectRessources(tilemap) {
