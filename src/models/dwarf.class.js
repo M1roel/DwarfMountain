@@ -20,20 +20,29 @@ export class Dwarf {
     this.maxInventorySize = GAME_CONFIG.INVENTORY_LIMIT;
     this.status = "idle";
     this.gatheringAction = null;
+    this.buildingAction = null;
   }
 
   // Funktion, die die Bewegung zur Zielposition berechnet
   move(tilemap) {
+    if (this.buildingAction) {
+      const buildResult = this.buildWoodHome(tilemap);
+      if (buildResult !== "in_progress") {
+        this.status = "idle";
+      }
+      return;
+    }
+
     if (this.gatheringAction) {
       const gatherResult = this.collectRessources(tilemap);
       if (gatherResult === "completed") {
-        const built = this.buildWoodHome(tilemap);
-        if (!built) {
+        const buildResult = this.buildWoodHome(tilemap);
+        if (buildResult === "none" || buildResult === "cancelled") {
           this.status = "idle";
         }
       } else if (gatherResult === "cancelled") {
-        const built = this.buildWoodHome(tilemap);
-        if (!built) {
+        const buildResult = this.buildWoodHome(tilemap);
+        if (buildResult === "none" || buildResult === "cancelled") {
           this.status = "idle";
         }
       }
@@ -49,8 +58,8 @@ export class Dwarf {
         return;
       }
 
-      const built = this.buildWoodHome(tilemap);
-      if (!built) {
+      const buildResult = this.buildWoodHome(tilemap);
+      if (buildResult === "none" || buildResult === "cancelled") {
         this.status = "idle";
       }
     } else {
