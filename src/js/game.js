@@ -4,6 +4,7 @@ import { drawDwarves, drawMap } from "./renderer.js";
 import { imageCache, preloadImages } from "./assetLoader.js";
 import { createInitialDwarves } from "./spawnSystem.js";
 import { startGameLoop } from "./gameLoop.js";
+import { createWorldState } from "./worldState.js";
 
 const {
   TILE_SIZE,
@@ -15,9 +16,10 @@ const {
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const level = new Level(MAP_WIDTH, MAP_HEIGHT);
-canvas.width = level.width * TILE_SIZE;
-canvas.height = level.height * TILE_SIZE;
 const dwarves = createInitialDwarves(level.tilemap, DWARF_COUNT);
+const worldState = createWorldState(level, dwarves);
+canvas.width = worldState.level.width * TILE_SIZE;
+canvas.height = worldState.level.height * TILE_SIZE;
 
 // Liste der Bilder, die vorgeladen werden müssen
 const imagePaths = [
@@ -34,8 +36,8 @@ preloadImages(imagePaths, () =>
   startGameLoop({
     ctx,
     canvas,
-    level,
-    dwarves,
+    level: worldState.level,
+    dwarves: worldState.dwarves,
     imageCache,
     moveInterval: MOVE_INTERVAL,
     drawMap,
