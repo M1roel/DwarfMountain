@@ -1,3 +1,5 @@
+import { GAME_CONFIG } from "../js/config.js";
+
 export class Dwarf {
   constructor(x, y) {
     this.x = x; // Startposition X
@@ -7,7 +9,7 @@ export class Dwarf {
     this.targetX = x; // Initialisiere Zielposition X
     this.targetY = y; // Initialisiere Zielposition Y
     this.inventory = [];
-    this.maxInventorySize = 5;
+    this.maxInventorySize = GAME_CONFIG.INVENTORY_LIMIT;
   }
 
   // Funktion, die die Bewegung zur Zielposition berechnet
