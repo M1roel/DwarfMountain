@@ -34,8 +34,20 @@ export class Dwarf {
   }
 
   moveTowardSettlementCenter(settlementCenter) {
-    this.targetX = settlementCenter.x;
-    this.targetY = settlementCenter.y;
+    const dx = settlementCenter.x - this.x;
+    const dy = settlementCenter.y - this.y;
+
+    let nextX = this.x;
+    let nextY = this.y;
+
+    if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) {
+      nextX += Math.sign(dx);
+    } else if (dy !== 0) {
+      nextY += Math.sign(dy);
+    }
+
+    this.targetX = nextX;
+    this.targetY = nextY;
     this.status = "moving";
   }
 
