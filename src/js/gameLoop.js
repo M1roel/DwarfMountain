@@ -1,7 +1,7 @@
 export function startGameLoop({
   ctx,
   canvas,
-  level,
+  worldState,
   dwarves,
   imageCache,
   moveInterval,
@@ -11,11 +11,12 @@ export function startGameLoop({
   let lastMoveTime = 0;
 
   function gameLoop(timestamp) {
+    const level = worldState.getActiveLevel();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMap(ctx, level, imageCache);
 
     if (timestamp - lastMoveTime > moveInterval) {
-      dwarves.forEach((dwarf) => dwarf.move(level.tilemap));
+      dwarves.forEach((dwarf) => dwarf.move(level.tilemap, worldState));
       lastMoveTime = timestamp;
     }
 
