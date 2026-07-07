@@ -3,8 +3,8 @@ import { GAME_CONFIG } from "./config.js";
 import { drawDwarves, drawMap } from "./renderer.js";
 import { imageCache, preloadImages } from "./assetLoader.js";
 import { createInitialDwarves } from "./spawnSystem.js";
+import { startGameLoop } from "./gameLoop.js";
 
-let lastMoveTime = 0;
 const {
   TILE_SIZE,
   MAP_WIDTH,
@@ -19,20 +19,6 @@ canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
 const dwarves = createInitialDwarves(level.tilemap, DWARF_COUNT);
 
-// Spiel-Loop (Rendern)
-function gameLoop(timestamp) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawMap(ctx, level, imageCache);
-
-  if (timestamp - lastMoveTime > MOVE_INTERVAL) {
-    dwarves.forEach((dwarf) => dwarf.move(level.tilemap));
-    lastMoveTime = timestamp;
-  }
-
-  drawDwarves(ctx, dwarves, imageCache);
-  requestAnimationFrame(gameLoop);
-}
-
 // Liste der Bilder, die vorgeladen werden müssen
 const imagePaths = [
   "public/img/water.jpg",
@@ -44,4 +30,15 @@ const imagePaths = [
 ];
 
 // Bilder vorladen und Spiel starten
-preloadImages(imagePaths, () => requestAnimationFrame(gameLoop));
+preloadImages(imagePaths, () =>
+  startGameLoop({
+    ctx,
+    canvas,
+    level,
+    dwarves,
+    imageCache,
+    moveInterval: MOVE_INTERVAL,
+    drawMap,
+    drawDwarves,
+  })
+);
