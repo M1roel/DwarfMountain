@@ -1,4 +1,4 @@
-export function createWorldState(level, dwarves) {
+export function createWorldState(level, dwarves, settlementCenter = null) {
   const undergroundLevel = {
     width: level.width,
     height: level.height,
@@ -17,6 +17,7 @@ export function createWorldState(level, dwarves) {
     dwarves,
     levels,
     activeZ: 0,
+    settlementCenter,
     storage: {
       wood: 0,
     },
