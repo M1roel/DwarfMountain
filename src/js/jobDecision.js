@@ -62,6 +62,47 @@ function canGatherWoodNow(dwarf, tilemap) {
   return false;
 }
 
+function getPriority(worldState, jobType) {
+  const priorities = worldState?.jobPriorities;
+
+  if (!priorities) {
+    return 0;
+  }
+
+  const keyByJobType = {
+    [JOB_TYPES.GATHER_WOOD]: "gather_wood",
+    [JOB_TYPES.DEPOSIT_WOOD]: "deposit_wood",
+    [JOB_TYPES.BUILD_HOUSE]: "build_house",
+  };
+
+  const key = keyByJobType[jobType];
+  if (!key) {
+    return 0;
+  }
+
+  const value = Number(priorities[key]);
+  return Number.isFinite(value) ? Math.max(0, value) : 0;
+}
+
+function pickWeightedJob(candidates) {
+  const totalWeight = candidates.reduce((sum, candidate) => sum + candidate.weight, 0);
+
+  if (totalWeight <= 0) {
+    return JOB_TYPES.IDLE;
+  }
+
+  let roll = Math.random() * totalWeight;
+
+  for (const candidate of candidates) {
+    roll -= candidate.weight;
+    if (roll < 0) {
+      return candidate.type;
+    }
+  }
+
+  return candidates[candidates.length - 1].type;
+}
+
 export function decideNextJob(dwarf, worldState) {
   const tilemap = getActiveTilemap(worldState);
 
@@ -69,12 +110,24 @@ export function decideNextJob(dwarf, worldState) {
     return JOB_TYPES.DEPOSIT_WOOD;
   }
 
+  const candidates = [];
+
   if (canBuildHouseNow(dwarf, worldState, tilemap)) {
-    return JOB_TYPES.BUILD_HOUSE;
+    const buildPriority = getPriority(worldState, JOB_TYPES.BUILD_HOUSE);
+    if (buildPriority > 0) {
+      candidates.push({ type: JOB_TYPES.BUILD_HOUSE, weight: buildPriority });
+    }
   }
 
   if (canGatherWoodNow(dwarf, tilemap)) {
-    return JOB_TYPES.GATHER_WOOD;
+    const gatherPriority = getPriority(worldState, JOB_TYPES.GATHER_WOOD);
+    if (gatherPriority > 0) {
+      candidates.push({ type: JOB_TYPES.GATHER_WOOD, weight: gatherPriority });
+    }
+  }
+
+  if (candidates.length > 0) {
+    return pickWeightedJob(candidates);
   }
 
   return JOB_TYPES.IDLE;

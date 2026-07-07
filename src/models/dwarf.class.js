@@ -199,7 +199,12 @@ export class Dwarf {
     this.resetTransportTracking();
   }
 
-  runNonTransportBehavior(tilemap, worldState) {
+  runNonTransportBehavior(tilemap, worldState, options = {}) {
+    const {
+      allowStartGather = true,
+      allowStartBuild = true,
+    } = options;
+
     this.resetTransportTracking();
 
     if (this.buildingAction) {
@@ -213,13 +218,21 @@ export class Dwarf {
     if (this.gatheringAction) {
       const gatherResult = this.collectRessources(tilemap);
       if (gatherResult === "completed") {
-        const buildResult = this.buildWoodHome(tilemap, worldState);
-        if (buildResult === "none" || buildResult === "cancelled") {
+        if (allowStartBuild) {
+          const buildResult = this.buildWoodHome(tilemap, worldState);
+          if (buildResult === "none" || buildResult === "cancelled") {
+            this.status = "idle";
+          }
+        } else {
           this.status = "idle";
         }
       } else if (gatherResult === "cancelled") {
-        const buildResult = this.buildWoodHome(tilemap, worldState);
-        if (buildResult === "none" || buildResult === "cancelled") {
+        if (allowStartBuild) {
+          const buildResult = this.buildWoodHome(tilemap, worldState);
+          if (buildResult === "none" || buildResult === "cancelled") {
+            this.status = "idle";
+          }
+        } else {
           this.status = "idle";
         }
       }
@@ -229,9 +242,16 @@ export class Dwarf {
     if (this.targetX !== undefined && this.targetY !== undefined) {
       applyTargetPosition(this);
       this.status = "moving";
-      const gatherResult = this.collectRessources(tilemap);
+      const gatherResult = allowStartGather
+        ? this.collectRessources(tilemap)
+        : "none";
 
       if (gatherResult === "in_progress") {
+        return;
+      }
+
+      if (!allowStartBuild) {
+        this.status = "idle";
         return;
       }
 
@@ -245,15 +265,24 @@ export class Dwarf {
   }
 
   runGatherWoodBehavior(tilemap, worldState) {
-    this.runNonTransportBehavior(tilemap, worldState);
+    this.runNonTransportBehavior(tilemap, worldState, {
+      allowStartGather: true,
+      allowStartBuild: false,
+    });
   }
 
   runBuildHouseBehavior(tilemap, worldState) {
-    this.runNonTransportBehavior(tilemap, worldState);
+    this.runNonTransportBehavior(tilemap, worldState, {
+      allowStartGather: false,
+      allowStartBuild: true,
+    });
   }
 
   runIdleBehavior(tilemap, worldState) {
-    this.runNonTransportBehavior(tilemap, worldState);
+    this.runNonTransportBehavior(tilemap, worldState, {
+      allowStartGather: false,
+      allowStartBuild: false,
+    });
   }
 
   runBehaviorForCurrentJob(tilemap, worldState) {
