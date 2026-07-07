@@ -210,7 +210,7 @@ settingsForm.addEventListener("submit", (event) => {
     startGameLoop({
       ctx,
       canvas,
-      level: worldState.getActiveLevel(),
+      worldState,
       dwarves: worldState.dwarves,
       imageCache,
       moveInterval,

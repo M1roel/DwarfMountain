@@ -23,8 +23,37 @@ export class Dwarf {
     this.buildingAction = null;
   }
 
+  hasWoodInInventory() {
+    return this.inventory.some((item) => item === "wood");
+  }
+
+  isNearSettlementCenter(settlementCenter) {
+    return (
+      Math.abs(this.x - settlementCenter.x) + Math.abs(this.y - settlementCenter.y) <= 1
+    );
+  }
+
+  moveTowardSettlementCenter(settlementCenter) {
+    this.targetX = settlementCenter.x;
+    this.targetY = settlementCenter.y;
+    this.status = "moving";
+  }
+
+  depositWood(worldState) {
+    const woodAmount = this.inventory.filter((item) => item === "wood").length;
+
+    if (woodAmount > 0 && worldState?.storage) {
+      worldState.storage.wood += woodAmount;
+      this.inventory = [];
+    }
+
+    this.targetX = undefined;
+    this.targetY = undefined;
+    this.status = "idle";
+  }
+
   // Funktion, die die Bewegung zur Zielposition berechnet
-  move(tilemap) {
+  move(tilemap, worldState) {
     if (this.buildingAction) {
       const buildResult = this.buildWoodHome(tilemap);
       if (buildResult !== "in_progress") {
@@ -47,6 +76,17 @@ export class Dwarf {
         }
       }
       return;
+    }
+
+    const settlementCenter = worldState?.settlementCenter;
+
+    if (this.hasWoodInInventory() && settlementCenter) {
+      if (this.isNearSettlementCenter(settlementCenter)) {
+        this.depositWood(worldState);
+        return;
+      }
+
+      this.moveTowardSettlementCenter(settlementCenter);
     }
 
     if (this.targetX !== undefined && this.targetY !== undefined) {
