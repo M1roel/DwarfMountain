@@ -1,9 +1,30 @@
 export function createWorldState(level, dwarves) {
-  const getActiveLevel = () => level;
+  const undergroundLevel = {
+    width: level.width,
+    height: level.height,
+    tilemap: Array.from({ length: level.height }, () =>
+      Array.from({ length: level.width }, () => "stone")
+    ),
+  };
 
-  return {
+  const levels = {
+    0: level,
+    [-1]: undergroundLevel,
+  };
+
+  const state = {
     level,
     dwarves,
+    levels,
+    activeZ: 0,
+  };
+
+  const getActiveLevel = () => state.levels[state.activeZ];
+  const getLevel = (z) => state.levels[z];
+
+  return {
+    ...state,
     getActiveLevel,
+    getLevel,
   };
 }
