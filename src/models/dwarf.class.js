@@ -27,27 +27,73 @@ export class Dwarf {
     return this.inventory.some((item) => item === "wood");
   }
 
+  isTransportMode(worldState) {
+    return this.hasWoodInInventory() && Boolean(worldState?.settlementCenter);
+  }
+
   isNearSettlementCenter(settlementCenter) {
     return (
       Math.abs(this.x - settlementCenter.x) + Math.abs(this.y - settlementCenter.y) <= 1
     );
   }
 
-  moveTowardSettlementCenter(settlementCenter) {
-    const dx = settlementCenter.x - this.x;
-    const dy = settlementCenter.y - this.y;
+  getTransportStep(tilemap, settlementCenter) {
+    const currentDistance = Math.abs(this.x - settlementCenter.x) + Math.abs(this.y - settlementCenter.y);
+    const directions = [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ];
+    const candidates = [];
 
-    let nextX = this.x;
-    let nextY = this.y;
+    for (const [dx, dy] of directions) {
+      const nextX = this.x + dx;
+      const nextY = this.y + dy;
 
-    if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) {
-      nextX += Math.sign(dx);
-    } else if (dy !== 0) {
-      nextY += Math.sign(dy);
+      if (tilemap[nextY] && tilemap[nextY][nextX] === "grass") {
+        const nextDistance = Math.abs(nextX - settlementCenter.x) + Math.abs(nextY - settlementCenter.y);
+
+        if (nextDistance < currentDistance) {
+          candidates.push({ x: nextX, y: nextY, distance: nextDistance });
+        }
+      }
     }
 
-    this.targetX = nextX;
-    this.targetY = nextY;
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    candidates.sort((a, b) => a.distance - b.distance);
+    return candidates[0];
+  }
+
+  runTransportMode(tilemap, worldState) {
+    const settlementCenter = worldState.settlementCenter;
+
+    this.gatheringAction = null;
+    this.buildingAction = null;
+
+    if (this.isNearSettlementCenter(settlementCenter)) {
+      this.depositWood(worldState);
+      return;
+    }
+
+    if (this.targetX !== undefined && this.targetY !== undefined) {
+      applyTargetPosition(this);
+      this.status = "moving";
+      return;
+    }
+
+    const nextStep = this.getTransportStep(tilemap, settlementCenter);
+
+    if (!nextStep) {
+      this.status = "idle";
+      return;
+    }
+
+    this.targetX = nextStep.x;
+    this.targetY = nextStep.y;
     this.status = "moving";
   }
 
@@ -66,6 +112,11 @@ export class Dwarf {
 
   // Funktion, die die Bewegung zur Zielposition berechnet
   move(tilemap, worldState) {
+    if (this.isTransportMode(worldState)) {
+      this.runTransportMode(tilemap, worldState);
+      return;
+    }
+
     if (this.buildingAction) {
       const buildResult = this.buildWoodHome(tilemap);
       if (buildResult !== "in_progress") {
@@ -88,17 +139,6 @@ export class Dwarf {
         }
       }
       return;
-    }
-
-    const settlementCenter = worldState?.settlementCenter;
-
-    if (this.hasWoodInInventory() && settlementCenter) {
-      if (this.isNearSettlementCenter(settlementCenter)) {
-        this.depositWood(worldState);
-        return;
-      }
-
-      this.moveTowardSettlementCenter(settlementCenter);
     }
 
     if (this.targetX !== undefined && this.targetY !== undefined) {
