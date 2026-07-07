@@ -18,8 +18,8 @@ const ctx = canvas.getContext("2d");
 const level = new Level(MAP_WIDTH, MAP_HEIGHT);
 const dwarves = createInitialDwarves(level.tilemap, DWARF_COUNT);
 const worldState = createWorldState(level, dwarves);
-canvas.width = worldState.level.width * TILE_SIZE;
-canvas.height = worldState.level.height * TILE_SIZE;
+canvas.width = worldState.getActiveLevel().width * TILE_SIZE;
+canvas.height = worldState.getActiveLevel().height * TILE_SIZE;
 
 // Liste der Bilder, die vorgeladen werden müssen
 const imagePaths = [
@@ -36,7 +36,7 @@ preloadImages(imagePaths, () =>
   startGameLoop({
     ctx,
     canvas,
-    level: worldState.level,
+    level: worldState.getActiveLevel(),
     dwarves: worldState.dwarves,
     imageCache,
     moveInterval: MOVE_INTERVAL,
