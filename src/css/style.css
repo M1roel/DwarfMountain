@@ -298,6 +298,41 @@ button:active {
   border: 1px solid #000;
 }
 
+.game-hud {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  width: min(260px, 70vw);
+  z-index: 20;
+  border: 1px solid rgba(122, 105, 89, 0.72);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(43, 37, 33, 0.9), rgba(34, 29, 25, 0.94));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.game-hud h2 {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d4c0a9;
+}
+
+.game-hud p {
+  margin: 4px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.game-hud strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .is-hidden {
   display: none;
 }
@@ -358,5 +393,12 @@ button:active {
 
   button {
     width: 100%;
+  }
+
+  .game-hud {
+    top: 8px;
+    left: 8px;
+    width: calc(100vw - 16px);
+    max-width: 320px;
   }
 }
