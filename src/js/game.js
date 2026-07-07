@@ -5,6 +5,7 @@ import { imageCache, preloadImages } from "./assetLoader.js";
 import { createInitialDwarves } from "./spawnSystem.js";
 import { startGameLoop } from "./gameLoop.js";
 import { createWorldState } from "./worldState.js";
+import { JOB_TYPES } from "./jobModel.js";
 
 const {
   TILE_SIZE,
@@ -53,6 +54,10 @@ const hudElements = {
   statusMoving: document.getElementById("hudStatusMoving"),
   statusGathering: document.getElementById("hudStatusGathering"),
   statusBuilding: document.getElementById("hudStatusBuilding"),
+  jobIdle: document.getElementById("hudJobIdle"),
+  jobGatherWood: document.getElementById("hudJobGatherWood"),
+  jobDepositWood: document.getElementById("hudJobDepositWood"),
+  jobBuildHouse: document.getElementById("hudJobBuildHouse"),
   moveInterval: document.getElementById("hudMoveInterval"),
 };
 
@@ -122,10 +127,20 @@ function createHudUpdater(worldState, moveInterval) {
       gathering: 0,
       building: 0,
     };
+    const jobCounts = {
+      [JOB_TYPES.IDLE]: 0,
+      [JOB_TYPES.GATHER_WOOD]: 0,
+      [JOB_TYPES.DEPOSIT_WOOD]: 0,
+      [JOB_TYPES.BUILD_HOUSE]: 0,
+    };
     const woodTotal = worldState.dwarves.reduce(
       (total, dwarf) => {
         const status = statusCounts[dwarf.status] !== undefined ? dwarf.status : "idle";
         statusCounts[status] += 1;
+        const jobType = jobCounts[dwarf.currentJobType] !== undefined
+          ? dwarf.currentJobType
+          : JOB_TYPES.IDLE;
+        jobCounts[jobType] += 1;
         return total + dwarf.inventory.filter((item) => item === "wood").length;
       },
       0
@@ -146,6 +161,10 @@ function createHudUpdater(worldState, moveInterval) {
     hudElements.statusMoving.textContent = statusCounts.moving.toString();
     hudElements.statusGathering.textContent = statusCounts.gathering.toString();
     hudElements.statusBuilding.textContent = statusCounts.building.toString();
+    hudElements.jobIdle.textContent = jobCounts[JOB_TYPES.IDLE].toString();
+    hudElements.jobGatherWood.textContent = jobCounts[JOB_TYPES.GATHER_WOOD].toString();
+    hudElements.jobDepositWood.textContent = jobCounts[JOB_TYPES.DEPOSIT_WOOD].toString();
+    hudElements.jobBuildHouse.textContent = jobCounts[JOB_TYPES.BUILD_HOUSE].toString();
     hudElements.moveInterval.textContent = moveInterval.toString();
   };
 

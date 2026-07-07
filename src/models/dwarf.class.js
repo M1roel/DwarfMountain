@@ -4,6 +4,7 @@ import { collectRessources } from "../js/resourceSystem.js";
 import { buildWoodHome } from "../js/buildingSystem.js";
 import { isWalkable } from "../js/passability.js";
 import { JOB_TYPES } from "../js/jobModel.js";
+import { decideNextJob } from "../js/jobDecision.js";
 import {
   expandCave,
   findMountain,
@@ -200,6 +201,8 @@ export class Dwarf {
 
   // Funktion, die die Bewegung zur Zielposition berechnet
   move(tilemap, worldState) {
+    this.currentJobType = decideNextJob(this, worldState);
+
     if (this.isTransportMode(worldState)) {
       this.runTransportMode(tilemap, worldState);
       return;
