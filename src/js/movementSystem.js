@@ -8,40 +8,26 @@ export function applyTargetPosition(dwarf) {
 }
 
 export function setRandomTarget(dwarf, tilemap) {
-  let directions = [0, 1, 2, 3]; // 0=oben, 1=rechts, 2=unten, 3=links
-  let found = false;
+  const neighbors = [
+    { x: dwarf.x, y: dwarf.y - 1 },
+    { x: dwarf.x + 1, y: dwarf.y },
+    { x: dwarf.x, y: dwarf.y + 1 },
+    { x: dwarf.x - 1, y: dwarf.y },
+  ];
 
-  while (directions.length > 0 && !found) {
-    let index = Math.floor(Math.random() * directions.length);
-    let direction = directions.splice(index, 1)[0]; // Eine Richtung zufaellig auswaehlen & entfernen
+  const walkableNeighbors = neighbors.filter(
+    ({ x, y }) => tilemap[y] && isWalkable(tilemap[y][x])
+  );
 
-    let newX = dwarf.x;
-    let newY = dwarf.y;
-
-    switch (direction) {
-      case 0:
-        newY -= 1;
-        break;
-      case 1:
-        newX += 1;
-        break;
-      case 2:
-        newY += 1;
-        break;
-      case 3:
-        newX -= 1;
-        break;
-    }
-
-    if (tilemap[newY] && isWalkable(tilemap[newY][newX])) {
-      dwarf.targetX = newX;
-      dwarf.targetY = newY;
-      dwarf.status = "moving";
-      found = true;
-    }
-  }
-
-  if (!found) {
+  if (walkableNeighbors.length === 0) {
     dwarf.status = "idle";
+    return;
   }
+
+  const randomNeighbor =
+    walkableNeighbors[Math.floor(Math.random() * walkableNeighbors.length)];
+
+  dwarf.targetX = randomNeighbor.x;
+  dwarf.targetY = randomNeighbor.y;
+  dwarf.status = "moving";
 }
