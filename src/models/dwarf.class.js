@@ -40,33 +40,32 @@ export class Dwarf {
 
   getTransportStep(tilemap, settlementCenter) {
     const currentDistance = Math.abs(this.x - settlementCenter.x) + Math.abs(this.y - settlementCenter.y);
-    const directions = [
-      [1, 0],
-      [-1, 0],
-      [0, 1],
-      [0, -1],
-    ];
-    const candidates = [];
+    const neighbors = [
+      { x: this.x + 1, y: this.y },
+      { x: this.x - 1, y: this.y },
+      { x: this.x, y: this.y + 1 },
+      { x: this.x, y: this.y - 1 },
+    ].filter(({ x, y }) => tilemap[y] && isWalkable(tilemap[y][x]));
 
-    for (const [dx, dy] of directions) {
-      const nextX = this.x + dx;
-      const nextY = this.y + dy;
-
-      if (tilemap[nextY] && isWalkable(tilemap[nextY][nextX])) {
-        const nextDistance = Math.abs(nextX - settlementCenter.x) + Math.abs(nextY - settlementCenter.y);
-
-        if (nextDistance < currentDistance) {
-          candidates.push({ x: nextX, y: nextY, distance: nextDistance });
-        }
-      }
-    }
-
-    if (candidates.length === 0) {
+    if (neighbors.length === 0) {
       return null;
     }
 
-    candidates.sort((a, b) => a.distance - b.distance);
-    return candidates[0];
+    const reducingNeighbors = neighbors
+      .map(({ x, y }) => ({
+        x,
+        y,
+        distance: Math.abs(x - settlementCenter.x) + Math.abs(y - settlementCenter.y),
+      }))
+      .filter(({ distance }) => distance < currentDistance);
+
+    if (reducingNeighbors.length > 0) {
+      reducingNeighbors.sort((a, b) => a.distance - b.distance);
+      return reducingNeighbors[0];
+    }
+
+    const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+    return { x: randomNeighbor.x, y: randomNeighbor.y, distance: currentDistance };
   }
 
   runTransportMode(tilemap, worldState) {
