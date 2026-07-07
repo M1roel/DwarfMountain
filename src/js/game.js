@@ -58,6 +58,12 @@ const hudElements = {
   jobGatherWood: document.getElementById("hudJobGatherWood"),
   jobDepositWood: document.getElementById("hudJobDepositWood"),
   jobBuildHouse: document.getElementById("hudJobBuildHouse"),
+  priorityGatherWood: document.getElementById("hudPriorityGatherWood"),
+  priorityDepositWood: document.getElementById("hudPriorityDepositWood"),
+  priorityBuildHouse: document.getElementById("hudPriorityBuildHouse"),
+  priorityGatherWoodValue: document.getElementById("hudPriorityGatherWoodValue"),
+  priorityDepositWoodValue: document.getElementById("hudPriorityDepositWoodValue"),
+  priorityBuildHouseValue: document.getElementById("hudPriorityBuildHouseValue"),
   moveInterval: document.getElementById("hudMoveInterval"),
 };
 
@@ -121,6 +127,38 @@ function findTilePosition(tilemap, type) {
   }
 
   return null;
+}
+
+function setupPriorityControls(worldState) {
+  const controls = [
+    {
+      key: "gather_wood",
+      input: hudElements.priorityGatherWood,
+      value: hudElements.priorityGatherWoodValue,
+    },
+    {
+      key: "deposit_wood",
+      input: hudElements.priorityDepositWood,
+      value: hudElements.priorityDepositWoodValue,
+    },
+    {
+      key: "build_house",
+      input: hudElements.priorityBuildHouse,
+      value: hudElements.priorityBuildHouseValue,
+    },
+  ];
+
+  controls.forEach(({ key, input, value }) => {
+    const priority = worldState.jobPriorities[key];
+    input.value = priority.toString();
+    value.textContent = priority.toString();
+
+    input.oninput = () => {
+      const nextPriority = Number(input.value);
+      worldState.jobPriorities[key] = nextPriority;
+      value.textContent = nextPriority.toString();
+    };
+  });
 }
 
 function createHudUpdater(worldState, moveInterval) {
@@ -227,6 +265,7 @@ settingsForm.addEventListener("submit", (event) => {
   canvas.classList.remove("is-hidden");
   gameHud.classList.remove("is-hidden");
 
+  setupPriorityControls(worldState);
   createHudUpdater(worldState, moveInterval);
 
   preloadImages(imagePaths, () =>
