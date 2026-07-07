@@ -199,15 +199,7 @@ export class Dwarf {
     this.resetTransportTracking();
   }
 
-  // Funktion, die die Bewegung zur Zielposition berechnet
-  move(tilemap, worldState) {
-    this.currentJobType = decideNextJob(this, worldState);
-
-    if (this.isTransportMode(worldState)) {
-      this.runTransportMode(tilemap, worldState);
-      return;
-    }
-
+  runNonTransportBehavior(tilemap, worldState) {
     this.resetTransportTracking();
 
     if (this.buildingAction) {
@@ -250,6 +242,41 @@ export class Dwarf {
     } else {
       setRandomTarget(this, tilemap); // Falls kein Ziel gesetzt ist, neues wählen
     }
+  }
+
+  runGatherWoodBehavior(tilemap, worldState) {
+    this.runNonTransportBehavior(tilemap, worldState);
+  }
+
+  runBuildHouseBehavior(tilemap, worldState) {
+    this.runNonTransportBehavior(tilemap, worldState);
+  }
+
+  runIdleBehavior(tilemap, worldState) {
+    this.runNonTransportBehavior(tilemap, worldState);
+  }
+
+  runBehaviorForCurrentJob(tilemap, worldState) {
+    switch (this.currentJobType) {
+      case JOB_TYPES.DEPOSIT_WOOD:
+        this.runTransportMode(tilemap, worldState);
+        return;
+      case JOB_TYPES.GATHER_WOOD:
+        this.runGatherWoodBehavior(tilemap, worldState);
+        return;
+      case JOB_TYPES.BUILD_HOUSE:
+        this.runBuildHouseBehavior(tilemap, worldState);
+        return;
+      case JOB_TYPES.IDLE:
+      default:
+        this.runIdleBehavior(tilemap, worldState);
+    }
+  }
+
+  // Funktion, die die Bewegung zur Zielposition berechnet
+  move(tilemap, worldState) {
+    this.currentJobType = decideNextJob(this, worldState);
+    this.runBehaviorForCurrentJob(tilemap, worldState);
   }
 
   // Methode, um ein neues zufälliges Ziel auf einem "grass"-Tile zu setzen
