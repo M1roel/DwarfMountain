@@ -10,6 +10,57 @@ export function generateDwarfOnGrass(tilemap) {
   return new Dwarf(x, y); // Erstelle einen Zwerg auf der gefundenen Position
 }
 
+function findSettlementCenter(tilemap) {
+  const centerX = Math.floor(tilemap[0].length / 2);
+  const centerY = Math.floor(tilemap.length / 2);
+  const maxRadius = Math.max(tilemap[0].length, tilemap.length);
+
+  for (let radius = 0; radius < maxRadius; radius++) {
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const x = centerX + dx;
+        const y = centerY + dy;
+
+        if (tilemap[y] && tilemap[y][x] === "grass") {
+          tilemap[y][x] = "camp_center";
+          return { x, y };
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function getSpawnAroundCenter(tilemap, center) {
+  const spawnRadius = 4;
+  const candidates = [];
+
+  for (let dy = -spawnRadius; dy <= spawnRadius; dy++) {
+    for (let dx = -spawnRadius; dx <= spawnRadius; dx++) {
+      const x = center.x + dx;
+      const y = center.y + dy;
+
+      if (tilemap[y] && tilemap[y][x] === "grass") {
+        candidates.push({ x, y });
+      }
+    }
+  }
+
+  return candidates.length > 0
+    ? candidates[Math.floor(Math.random() * candidates.length)]
+    : null;
+}
+
 export function createInitialDwarves(tilemap, dwarfCount) {
-  return Array.from({ length: dwarfCount }, () => generateDwarfOnGrass(tilemap));
+  const settlementCenter = findSettlementCenter(tilemap);
+
+  if (!settlementCenter) {
+    return Array.from({ length: dwarfCount }, () => generateDwarfOnGrass(tilemap));
+  }
+
+  return Array.from({ length: dwarfCount }, () => {
+    const spawnPoint = getSpawnAroundCenter(tilemap, settlementCenter);
+    return spawnPoint ? new Dwarf(spawnPoint.x, spawnPoint.y) : generateDwarfOnGrass(tilemap);
+  });
 }
