@@ -4,10 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dwarf Mountain</title>
+    <link rel="stylesheet" href="./src/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/simplex-noise@2.4.0/simplex-noise.js"></script>
 </head>
 <body>
-    <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+    <main class="start-screen" id="startScreen">
+        <section class="panel" aria-labelledby="title">
+            <header class="panel-header">
+                <h1 id="title">Dwarf Mountain</h1>
+                <p>Siedlung vorbereiten und dann den Stollen starten.</p>
+            </header>
+
+            <div class="decor" aria-hidden="true">
+                <svg viewBox="0 0 240 60" class="mountain-strip">
+                    <path d="M0 60 L30 28 L55 60 Z M45 60 L88 18 L125 60 Z M110 60 L150 26 L188 60 Z M170 60 L210 20 L240 60 Z"></path>
+                </svg>
+                <div class="torch"></div>
+            </div>
+
+            <form id="settingsForm" class="settings-grid">
+                <label>
+                    <span>Mapbreite</span>
+                    <input type="range" id="mapWidth" name="mapWidth" min="40" max="220" step="1">
+                    <output for="mapWidth" id="mapWidthValue"></output>
+                </label>
+
+                <label>
+                    <span>Maphöhe</span>
+                    <input type="range" id="mapHeight" name="mapHeight" min="30" max="140" step="1">
+                    <output for="mapHeight" id="mapHeightValue"></output>
+                </label>
+
+                <label>
+                    <span>Zwergenanzahl</span>
+                    <input type="range" id="dwarfCount" name="dwarfCount" min="1" max="120" step="1">
+                    <output for="dwarfCount" id="dwarfCountValue"></output>
+                </label>
+
+                <label>
+                    <span>Bewegungsintervall</span>
+                    <input type="range" id="moveInterval" name="moveInterval" min="5" max="200" step="1">
+                    <output for="moveInterval" id="moveIntervalValue"></output>
+                </label>
+
+                <label>
+                    <span>Inventarlimit</span>
+                    <input type="range" id="inventoryLimit" name="inventoryLimit" min="1" max="20" step="1">
+                    <output for="inventoryLimit" id="inventoryLimitValue"></output>
+                </label>
+
+                <div class="actions">
+                    <button type="button" id="resetDefaults">Standards</button>
+                    <button type="submit" id="startGame">Spiel starten</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <canvas id="gameCanvas" class="game-canvas is-hidden" width="1920" height="1080"></canvas>
 
     <script type="module" src="./src/js/game.js"></script>
 </body>
