@@ -2,6 +2,7 @@ import { Dwarf } from "../models/dwarf.class.js";
 import { Level } from "../levels/level.js";
 import { GAME_CONFIG } from "./config.js";
 import { drawDwarves, drawMap } from "./renderer.js";
+import { imageCache, preloadImages } from "./assetLoader.js";
 
 let lastMoveTime = 0;
 const {
@@ -19,27 +20,6 @@ canvas.height = level.height * TILE_SIZE;
 const dwarves = Array.from({ length: DWARF_COUNT }, () =>
   generateDwarfOnGrass(level.tilemap)
 );
-
-// Bild-Cache
-const imageCache = {};
-
-// Funktion zum Vorladen der Bilder
-function preloadImages(imagePaths, callback) {
-  let loadedImages = 0;
-  const totalImages = imagePaths.length;
-
-  imagePaths.forEach((path) => {
-    const img = new Image();
-    img.src = path;
-    img.onload = () => {
-      loadedImages++;
-      if (loadedImages === totalImages) {
-        callback(); // Starte das Spiel, wenn alle Bilder geladen sind
-      }
-    };
-    imageCache[path] = img;
-  });
-}
 
 // Funktion, um einen Zwerg auf einem "grass"-Tile zu generieren
 function generateDwarfOnGrass(tilemap) {
