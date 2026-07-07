@@ -1,42 +1,23 @@
 import { Dwarf } from "../models/dwarf.class.js";
 import { Level } from "../levels/level.js";
+import { GAME_CONFIG } from "./config.js";
 
 let lastMoveTime = 0;
-const TILE_SIZE = 12;
-const MOVE_INTERVAL = 10;
+const {
+  TILE_SIZE,
+  MAP_WIDTH,
+  MAP_HEIGHT,
+  MOVE_INTERVAL,
+  DWARF_COUNT,
+} = GAME_CONFIG;
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const level = new Level(157, 73);
+const level = new Level(MAP_WIDTH, MAP_HEIGHT);
 canvas.width = level.width * TILE_SIZE;
 canvas.height = level.height * TILE_SIZE;
-const dwarves = [
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
-  generateDwarfOnGrass(level.tilemap),
+const dwarves = Array.from({ length: DWARF_COUNT }, () =>
   generateDwarfOnGrass(level.tilemap)
-];
+);
 
 // Bild-Cache
 const imageCache = {};
